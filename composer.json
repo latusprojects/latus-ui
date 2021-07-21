@@ -20,8 +20,15 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Latus\\UI\\UIServiceProvider"
+        "Latus\\UI\\Providers\\UIServiceProvider"
       ]
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://latusprojects.repo.repman.io"
+    }
+  ],
+  "minimum-stability": "dev"
 }

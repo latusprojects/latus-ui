@@ -1,7 +1,8 @@
 <?php
 
-namespace Latus\UI;
+namespace Latus\UI\Providers;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
 class UIServiceProvider extends ServiceProvider
@@ -13,6 +14,14 @@ class UIServiceProvider extends ServiceProvider
      */
     public function register()
     {
+
+        $this->app->singleton('widgets', function () {
+            return new Collection();
+        });
+
+        $this->app->singleton('modules', function () {
+            return new Collection();
+        });
     }
 
     /**
