@@ -20,7 +20,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Latus\\UI\\UIServiceProvider"
+        "Latus\\UI\\Providers\\UIServiceProvider"
       ]
     }
   }

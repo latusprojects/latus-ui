@@ -1,6 +1,6 @@
 <?php
 
-namespace Latus\UI;
+namespace Latus\UI\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
