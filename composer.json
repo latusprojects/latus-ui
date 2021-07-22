@@ -10,7 +10,8 @@
   ],
   "require": {
     "php": "^8.0",
-    "laravel/framework": "8.*"
+    "laravel/framework": "8.*",
+    "latusprojects/latus-model-repositories": "dev-develop"
   },
   "autoload": {
     "psr-4": {
@@ -20,8 +21,15 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Latus\\UI\\UIServiceProvider"
+        "Latus\\UI\\Providers\\UIServiceProvider"
       ]
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://latusprojects.repo.repman.io"
+    }
+  ],
+  "minimum-stability": "dev"
 }
