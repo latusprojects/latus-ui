@@ -4,6 +4,8 @@ namespace Latus\UI\Providers;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
+use Latus\UI\Repositories\Contracts\PageSettingRepository as PageSettingRepositoryContract;
+use Latus\UI\Repositories\Eloquent\PageSettingRepository;
 
 class UIServiceProvider extends ServiceProvider
 {
@@ -14,6 +16,10 @@ class UIServiceProvider extends ServiceProvider
      */
     public function register()
     {
+
+        if (!$this->app->bound(PageSettingRepositoryContract::class)) {
+            $this->app->bind(PageSettingRepositoryContract::class, PageSettingRepository::class);
+        }
 
         $this->app->singleton('widgets', function () {
             return new Collection();
@@ -31,5 +37,6 @@ class UIServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 }
