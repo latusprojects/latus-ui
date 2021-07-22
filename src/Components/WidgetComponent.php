@@ -55,12 +55,12 @@ abstract class WidgetComponent extends Component implements WidgetComponentContr
 
             $resolved_data = $widget->resolvesData();
 
-            if (!$this->authorizeRequest($request)) {
-                return response('Forbidden', 403, ['Content-Type', 'application/json']);
-            }
-
             if (!$resolved_data) {
                 return response('No Content', 204, ['Content-Type', 'application/json']);
+            }
+
+            if (!$this->authorizeRequest($request)) {
+                return response('Forbidden', 403, ['Content-Type', 'application/json']);
             }
 
             return response([
