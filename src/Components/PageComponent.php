@@ -14,7 +14,7 @@ abstract class PageComponent extends Component implements PageComponentContract
     {
     }
 
-    public function getModule(): ModuleComponent
+    public function module(): ModuleComponent
     {
         return $this->moduleComponent;
     }
