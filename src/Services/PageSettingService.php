@@ -5,6 +5,7 @@ namespace Latus\UI\Services;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Latus\UI\Models\PageSetting;
 use Latus\UI\Repositories\Contracts\PageSettingRepository;
@@ -49,6 +50,11 @@ class PageSettingService
     public function find(int|string $id): Model|null
     {
         return $this->pageSettingRepository->find($id);
+    }
+
+    public function getSettingsOfPage(string $module, string $page): Collection
+    {
+        return $this->pageSettingRepository->getSettings($module, $page);
     }
 
     public function findByKey(string $module, string $page, string $key): Model|null
