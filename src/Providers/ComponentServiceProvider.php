@@ -5,31 +5,38 @@ namespace Latus\UI\Providers;
 
 
 use Illuminate\Support\ServiceProvider;
-use Latus\UI\Components\ComponentRepository;
+use Latus\UI\Services\ComponentService;
 
 abstract class ComponentServiceProvider extends ServiceProvider
 {
 
-    protected ComponentRepository $componentRepository;
-
-    public function __construct($app)
+    public function __construct(
+        $app,
+        protected ComponentService $componentService
+    )
     {
         parent::__construct($app);
-
-        $this->componentRepository = new ComponentRepository();
     }
 
-    protected function defineModules(array $modules)
+    protected function defineModules(array $module_contracts)
     {
-        foreach ($modules as $module_class) {
-            $this->componentRepository->defineModule(app()->make($module_class));
+        foreach ($module_contracts as $moduleContract) {
+            $this->componentService->defineModule($moduleContract);
         }
     }
 
-    protected function defineWidgets(array $widgets)
+    protected function provideModules(array $moduleClasses)
     {
-        foreach ($widgets as $widget_class) {
-            $this->componentRepository->defineWidget(app()->make($widget_class));
+        foreach ($moduleClasses as $moduleContract => $moduleClass) {
+            $this->componentService->provideModule($moduleContract, $moduleClass);
+        }
+
+    }
+
+    protected function defineWidgets(array $widgetClasses)
+    {
+        foreach ($widgetClasses as $widgetClass) {
+            $this->componentService->defineWidget($widgetClass);
         }
     }
 }
