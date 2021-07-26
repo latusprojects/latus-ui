@@ -25,9 +25,9 @@ class ComponentService
         $this->componentRepository->provideModule($moduleContract, $moduleClass);
     }
 
-    public function defineWidget(string $widgetClass)
+    public function provideWidget(string $widgetClass, string $widgetName)
     {
-        $this->componentRepository->defineWidget($widgetClass);
+        $this->componentRepository->provideWidget($widgetClass, $widgetName);
     }
 
     public function getActiveModule(string $moduleContract): ModuleComponent|null

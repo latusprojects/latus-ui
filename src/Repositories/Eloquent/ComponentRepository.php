@@ -15,7 +15,6 @@ class ComponentRepository implements ComponentRepositoryContract
 
     public function __construct(
         protected Collection $providedModules,
-        protected array $definedWidgets,
         protected array $definedModules,
         protected SettingService $settingService
     )
@@ -39,10 +38,10 @@ class ComponentRepository implements ComponentRepositoryContract
         }
     }
 
-    public function defineWidget(string $widgetClass)
+    public function provideWidget(string $widgetClass, string $widgetName)
     {
-        if (!in_array($widgetClass, $this->definedWidgets)) {
-            $this->definedWidgets[] = $widgetClass;
+        if (!app()->bound($widgetName)) {
+            app()->bind($widgetName, $widgetClass);
         }
     }
 
