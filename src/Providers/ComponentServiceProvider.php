@@ -33,10 +33,10 @@ abstract class ComponentServiceProvider extends ServiceProvider
 
     }
 
-    protected function defineWidgets(array $widgetClasses)
+    protected function provideWidgets(array $widgetClasses)
     {
-        foreach ($widgetClasses as $widgetClass) {
-            $this->componentService->defineWidget($widgetClass);
+        foreach ($widgetClasses as $widgetName => $widgetClass) {
+            $this->componentService->provideWidget($widgetClass, $widgetName);
         }
     }
 }

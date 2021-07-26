@@ -11,7 +11,7 @@ interface ComponentRepository
 
     public function provideModule(string $moduleContract, string $moduleClass);
 
-    public function defineWidget(string $widgetClass);
+    public function provideWidget(string $widgetClass, string $widgetName);
 
     public function getActiveModule(string $moduleContract): ModuleComponent|null;
 
