@@ -12,7 +12,9 @@
     "php": "^8.0",
     "laravel/framework": "8.*",
     "latusprojects/latus-model-repositories": "0.1.*",
-    "latusprojects/latus-settings": "0.1.*"
+    "latusprojects/latus-settings": "0.1.*",
+    "latusprojects/latus-collections": "0.1.*",
+    "latusprojects/latus-permissions": "0.2.*"
   },
   "autoload": {
     "psr-4": {
