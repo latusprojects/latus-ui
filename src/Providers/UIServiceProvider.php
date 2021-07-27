@@ -44,7 +44,7 @@ class UIServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
         $this->provideWidgets([
-            AdminNav::class
+            'admin-nav' => AdminNav::class
         ]);
     }
 }
