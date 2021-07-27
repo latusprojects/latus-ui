@@ -25,6 +25,7 @@ abstract class NavigationWidget extends WidgetComponent implements Contracts\Nav
             '*.label' => 'required|string|min:3|max:255',
             '*.icon' => 'sometimes|string|min:2|max:255',
             '*.url' => 'sometimes|url',
+            '*.group' => 'sometimes|string|min:3',
             '*.permissions' => 'sometimes|array',
             '*.permissions.*' => 'string|exists:permissions,name',
             '*.items' => [
@@ -117,5 +118,38 @@ abstract class NavigationWidget extends WidgetComponent implements Contracts\Nav
 
     public function register()
     {
+    }
+
+    public function putBefore(string $indexKey, array $items)
+    {
+        $targetItem = $this->getItems()->where('name', $indexKey)->first();
+
+        if (!$targetItem) {
+            return;
+        }
+        if (isset($targetItem['group'])) {
+            foreach ($items as &$item) {
+                $item['group'] = $targetItem['group'];
+            }
+        }
+
+        $this->getItems()->putBefore($indexKey, $items);
+
+    }
+
+    public function putAfter(string $indexKey, array $items)
+    {
+        $targetItem = $this->getItems()->where('name', $indexKey)->first();
+
+        if (!$targetItem) {
+            return;
+        }
+        if (isset($targetItem['group'])) {
+            foreach ($items as &$item) {
+                $item['group'] = $targetItem['group'];
+            }
+        }
+
+        $this->getItems()->putAfter($indexKey, $items);
     }
 }

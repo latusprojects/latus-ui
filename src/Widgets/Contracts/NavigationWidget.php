@@ -16,4 +16,8 @@ interface NavigationWidget
     public function levels(): int;
 
     public function supportsPermissions(): bool;
+
+    public function putBefore(string $indexKey, array $items);
+
+    public function putAfter(string $indexKey, array $items);
 }

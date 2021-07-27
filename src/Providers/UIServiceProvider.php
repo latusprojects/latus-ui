@@ -32,6 +32,10 @@ class UIServiceProvider extends ServiceProvider
         $this->app->singleton('modules', function () {
             return new Collection();
         });
+
+        $this->provideWidgets([
+            'admin-nav' => AdminNav::class
+        ]);
     }
 
     /**
@@ -42,9 +46,5 @@ class UIServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-
-        $this->provideWidgets([
-            'admin-nav' => AdminNav::class
-        ]);
     }
 }
