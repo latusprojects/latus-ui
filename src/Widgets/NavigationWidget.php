@@ -69,9 +69,50 @@ abstract class NavigationWidget extends WidgetComponent implements Contracts\Nav
         return null;
     }
 
+    protected function userHasPermissions(PermissionService $permissionService, UserService $userService, User $user, array $permissions): bool
+    {
+        foreach ($permissions as $permissionName) {
+            /**
+             * @var Permission $permission
+             */
+            $permission = $permissionService->findByName($permissionName);
+            if (!$userService->userHasPermission($user, $permission)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function resolvesData(): array|null
     {
-        return $this->getItems()->toArray();
+        $finalItems = [];
+
+        /**
+         * @var PermissionService $permissionService
+         */
+        $permissionService = app()->make(PermissionService::class);
+
+        /**
+         * @var UserService $userService
+         */
+        $userService = app()->make(UserService::class);
+
+        /**
+         * @var User $user
+         */
+        $user = auth()->user();
+
+        foreach ($this->getItems()->toArray() as $item) {
+            if (
+                !$this->supportsPermissions()
+                || !isset($item['permissions'])
+                || $this->userHasPermissions($permissionService, $userService, $user, $item['permissions'])
+            ) {
+                $finalItems[] = $item;
+            }
+        }
+        return $finalItems;
     }
 
     public function register()
