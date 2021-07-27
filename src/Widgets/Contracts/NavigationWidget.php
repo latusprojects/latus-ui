@@ -14,4 +14,6 @@ interface NavigationWidget
     public function validateItems();
 
     public function levels(): int;
+
+    public function supportsPermissions(): bool;
 }

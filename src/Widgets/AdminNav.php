@@ -44,4 +44,9 @@ class AdminNav extends NavigationWidget
     {
         return 2;
     }
+
+    public function supportsPermissions(): bool
+    {
+        return true;
+    }
 }
