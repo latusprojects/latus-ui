@@ -7,6 +7,10 @@ namespace Latus\UI\Widgets;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use Latus\Permissions\Models\Permission;
+use Latus\Permissions\Models\User;
+use Latus\Permissions\Services\PermissionService;
+use Latus\Permissions\Services\UserService;
 use Latus\UI\Components\WidgetComponent;
 
 abstract class NavigationWidget extends WidgetComponent implements Contracts\NavigationWidget
@@ -25,9 +29,16 @@ abstract class NavigationWidget extends WidgetComponent implements Contracts\Nav
             '*.permissions.*' => 'string|exists:permissions,name',
             '*.items' => [
                 'sometimes',
-                'array',
                 function ($attribute, $value, $fail) {
-                    $subValidator = Validator::make($value, self::getItemValidationRules());
+                    if (!($value instanceof Collection || is_array($value))) {
+                        $fail('The ' . $attribute . ' must be either an array or an instance of Illuminate\Support\Collection');
+                    }
+                    $arrayItems = $value;
+
+                    if ($value instanceof Collection) {
+                        $arrayItems = $value->toArray();
+                    }
+                    $subValidator = Validator::make($arrayItems, self::getItemValidationRules());
                     if ($subValidator->fails()) {
                         $fail($subValidator->errors()->first());
                     }
