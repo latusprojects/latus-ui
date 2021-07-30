@@ -12,8 +12,6 @@ use Latus\UI\Models\PageSetting;
 interface PageSettingRepository extends Repository
 {
 
-    public function __construct(PageSetting $pageSetting);
-
     public function delete(PageSetting $pageSetting);
 
     public function getValue(PageSetting $pageSetting): string;

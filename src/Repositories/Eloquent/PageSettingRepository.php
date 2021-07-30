@@ -13,6 +13,11 @@ use Latus\UI\Repositories\Contracts\PageSettingRepository as PageSettingReposito
 class PageSettingRepository extends EloquentRepository implements PageSettingRepositoryContract
 {
 
+    public function relatedModel(): Model
+    {
+        return new PageSetting();
+    }
+
     public function delete(PageSetting $pageSetting)
     {
         $pageSetting->delete();
