@@ -5,7 +5,9 @@ namespace Latus\UI\Providers;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Latus\UI\Providers\Traits\ProvidesWidgets;
+use Latus\UI\Repositories\Contracts\ComponentRepository as ComponentRepositoryContract;
 use Latus\UI\Repositories\Contracts\PageSettingRepository as PageSettingRepositoryContract;
+use Latus\UI\Repositories\Eloquent\ComponentRepository;
 use Latus\UI\Repositories\Eloquent\PageSettingRepository;
 use Latus\UI\Widgets\AdminNav;
 
@@ -23,6 +25,10 @@ class UIServiceProvider extends ServiceProvider
 
         if (!$this->app->bound(PageSettingRepositoryContract::class)) {
             $this->app->bind(PageSettingRepositoryContract::class, PageSettingRepository::class);
+        }
+
+        if (!$this->app->bound(ComponentRepositoryContract::class)) {
+            $this->app->bind(ComponentRepositoryContract::class, ComponentRepository::class);
         }
 
         $this->app->singleton('widgets', function () {
