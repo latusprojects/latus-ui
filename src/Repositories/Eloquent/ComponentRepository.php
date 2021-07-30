@@ -4,7 +4,6 @@
 namespace Latus\UI\Repositories\Eloquent;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Support\Collection;
 use Latus\Settings\Models\Setting;
 use Latus\Settings\Services\SettingService;
 use Latus\UI\Components\Contracts\ModuleComponent;
@@ -13,28 +12,22 @@ use Latus\UI\Repositories\Contracts\ComponentRepository as ComponentRepositoryCo
 class ComponentRepository implements ComponentRepositoryContract
 {
 
+    protected static array $definedModules;
+
     public function __construct(
-        protected Collection $providedModules,
-        protected array $definedModules,
         protected SettingService $settingService
     )
     {
+
+        if (!self::$definedModules) {
+            self::$definedModules = [];
+        }
     }
 
     public function defineModule(string $moduleContract)
     {
-        if (!in_array($moduleContract, $this->definedModules)) {
-            $this->definedModules[] = $moduleContract;
-        }
-    }
-
-    public function provideModule(string $moduleContract, string $moduleClass)
-    {
-        if (in_array($moduleContract, $this->definedModules)
-            && !in_array($moduleContract, $this->getDisabledModules())
-            && ($this->providedModules->has($moduleContract) && !$this->providedModules->get($moduleContract)->has($moduleClass))
-        ) {
-            $this->providedModules->mergeRecursive(collect([$moduleContract => [$moduleClass]]));
+        if (!in_array($moduleContract, self::$definedModules)) {
+            self::$definedModules[] = $moduleContract;
         }
     }
 
@@ -45,28 +38,49 @@ class ComponentRepository implements ComponentRepositoryContract
         }
     }
 
-    public function getActiveModule(string $moduleContract): ModuleComponent|null
+    protected function createModuleBinding(string $moduleContract, string $moduleClass): ModuleComponent|null
     {
+
         try {
-            return app()->make($moduleContract);
+            /**
+             * @var ModuleComponent $moduleInstance
+             */
+            $moduleInstance = app()->make($moduleClass);
+            $moduleInstance->compose();
+
+            app()->singleton($moduleContract, $moduleInstance);
+
+            return $moduleInstance;
+
         } catch (BindingResolutionException $e) {
             return null;
         }
     }
 
-    public function setActiveModule(string $moduleContract, string $moduleClass)
+    public function getActiveModule(string $moduleContract): ModuleComponent|bool|null
     {
 
-        /**
-         * @var Setting $setting
-         */
-        $setting = $this->settingService->findByKey('active_modules');
-        $activeModules = unserialize($setting->getValue());
-        $activeModules[$moduleContract] = $moduleClass;
+        $activeModules = $this->getActiveModules();
 
-        $this->settingService->setSettingValue($setting, serialize($activeModules));
+        if (in_array($moduleContract, $this->getDisabledModules()) || !isset($activeModules[$moduleContract])) {
+            return false;
+        }
+
+        try {
+            $moduleInstance = app()->make($moduleContract);
+
+            if (get_class($moduleInstance) === $activeModules[$moduleContract]) {
+                return $moduleInstance;
+            }
+
+            return $this->createModuleBinding($moduleContract, $activeModules[$moduleContract]);
+
+        } catch (BindingResolutionException $e) {
+            return null;
+        }
 
     }
+
 
     public function disableModule(string $moduleContract)
     {
@@ -80,7 +94,6 @@ class ComponentRepository implements ComponentRepositoryContract
             $disabledModules[] = $moduleContract;
             $this->settingService->setSettingValue($setting, serialize($disabledModules));
         }
-
     }
 
     public function enableModule(string $moduleContract)
@@ -103,6 +116,15 @@ class ComponentRepository implements ComponentRepositoryContract
          * @var Setting $setting
          */
         $setting = $this->settingService->findByKey('disabled_modules');
+        return unserialize($setting->getValue());
+    }
+
+    public function getActiveModules(): array
+    {
+        /**
+         * @var Setting $setting
+         */
+        $setting = $this->settingService->findByKey('active_modules');
         return unserialize($setting->getValue());
     }
 }
