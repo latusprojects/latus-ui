@@ -19,7 +19,7 @@ class ComponentRepository implements ComponentRepositoryContract
     )
     {
 
-        if (!self::$definedModules) {
+        if (!isset($this->{'definedModules'})) {
             self::$definedModules = [];
         }
     }
