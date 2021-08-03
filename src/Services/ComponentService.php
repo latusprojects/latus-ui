@@ -35,11 +35,6 @@ class ComponentService
         return $this->componentRepository->getActiveModule($moduleContract);
     }
 
-    public function setActiveModule(string $moduleContract, string $moduleClass)
-    {
-        $this->componentRepository->setActiveModule($moduleContract, $moduleClass);
-    }
-
     public function getDisabledModules(): array
     {
         return $this->componentRepository->getDisabledModules();
