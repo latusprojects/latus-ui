@@ -3,9 +3,11 @@
 
 namespace Latus\UI\Components;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use \Latus\UI\Components\Contracts\ModuleComponent as ModuleComponentContract;
+use Latus\UI\Components\Contracts\PageComponent;
 
 abstract class ModuleComponent extends Component implements ModuleComponentContract
 {
@@ -28,6 +30,19 @@ abstract class ModuleComponent extends Component implements ModuleComponentContr
 
     public function compose()
     {
+        $this->register();
         app()->singleton(static::class, $this);
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    public function getPage(string $name): PageComponent
+    {
+        if ($this->pages->has($name)) {
+            return app()->make($this->pages->get($name));
+        }
+
+        return app()->make($this->pages->first());
     }
 }
