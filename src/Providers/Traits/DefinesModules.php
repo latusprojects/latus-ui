@@ -10,8 +10,8 @@ trait DefinesModules
 
     protected function defineModules(array $module_contracts)
     {
-        foreach ($module_contracts as $moduleContract) {
-            $this->getComponentService()->defineModule($moduleContract);
+        foreach ($module_contracts as $moduleContract => $info) {
+            $this->getComponentService()->defineModule($moduleContract, $info);
         }
     }
 }
