@@ -15,14 +15,14 @@ class ComponentService
     {
     }
 
-    public function defineModule(string $moduleContract)
+    public function defineModule(string $moduleContract, array $info)
     {
-        $this->componentRepository->defineModule($moduleContract);
+        $this->componentRepository->defineModule($moduleContract, $info);
     }
 
-    public function provideModule(string $moduleContract, string $moduleClass)
+    public function getModuleInfo(string $moduleContract): array
     {
-        $this->componentRepository->provideModule($moduleContract, $moduleClass);
+        return $this->componentRepository->getModuleInfo($moduleContract);
     }
 
     public function provideWidget(string $widgetClass, string $widgetName)
