@@ -7,7 +7,9 @@ use Latus\UI\Components\Contracts\ModuleComponent;
 
 interface ComponentRepository
 {
-    public function defineModule(string $moduleContract);
+    public function defineModule(string $moduleContract, array $info);
+
+    public function getModuleInfo(string $moduleContract): array;
 
     public function provideWidget(string $widgetClass, string $widgetName);
 

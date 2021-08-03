@@ -24,10 +24,24 @@ class ComponentRepository implements ComponentRepositoryContract
         }
     }
 
-    public function defineModule(string $moduleContract)
+    public function getModuleInfo(string $moduleContract): array
     {
-        if (!in_array($moduleContract, self::$definedModules)) {
-            self::$definedModules[] = $moduleContract;
+
+        $info = self::$definedModules[$moduleContract];
+
+        if (!isset($info['alias'])) {
+            $parts = explode('\\', $moduleContract);
+            $info['alias'] = strtolower($parts[sizeof($parts) - 1]);
+        }
+
+        return $info;
+
+    }
+
+    public function defineModule(string $moduleContract, array $info)
+    {
+        if (!isset($moduleContract, self::$definedModules)) {
+            self::$definedModules[$moduleContract] = $info;
         }
     }
 
