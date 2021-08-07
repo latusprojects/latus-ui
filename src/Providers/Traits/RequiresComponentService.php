@@ -13,7 +13,7 @@ trait RequiresComponentService
     public function getComponentService(): ComponentService
     {
         if (!isset($this->{'componentService'})) {
-            $this->componentService = app()->make(ComponentService::class);
+            $this->componentService = $this->app->make(ComponentService::class);
         }
 
         return $this->componentService;
