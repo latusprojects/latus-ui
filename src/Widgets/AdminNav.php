@@ -20,7 +20,7 @@ class AdminNav extends NavigationWidget
     protected UserService $userService;
     protected PermissionService $permissionService;
 
-    public function __construct(PageComponent|ModuleComponent|null &$context = null)
+    public function __construct(PageComponent|ModuleComponent|null $context = null)
     {
         parent::__construct($context);
 
