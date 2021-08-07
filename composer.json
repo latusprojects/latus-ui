@@ -21,13 +21,6 @@
       "Latus\\UI\\": "src/"
     }
   },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Latus\\UI\\Providers\\UIServiceProvider"
-      ]
-    }
-  },
   "repositories": [
     {
       "type": "composer",
