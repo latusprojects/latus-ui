@@ -13,7 +13,7 @@ abstract class WidgetComponent extends Component implements WidgetComponentContr
 {
 
     public function __construct(
-        protected ModuleComponent|PageComponent|null &$context = null
+        protected ModuleComponent|PageComponent|null $context = null
     )
     {
     }
