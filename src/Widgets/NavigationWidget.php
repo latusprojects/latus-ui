@@ -50,7 +50,7 @@ abstract class NavigationWidget extends WidgetComponent implements Contracts\Nav
 
     public function &getItems(): Collection
     {
-        if (!$this->items) {
+        if (!isset($this->{'items'})) {
             $this->items = new Collection();
         }
         return $this->items;
