@@ -4,6 +4,7 @@
 namespace Latus\UI\Repositories\Eloquent;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Latus\Laravel\Http\Middleware\BuildPackageDependencies;
 use Latus\Settings\Models\Setting;
 use Latus\Settings\Services\SettingService;
 use Latus\UI\Components\Contracts\ModuleComponent;
@@ -47,9 +48,11 @@ class ComponentRepository implements ComponentRepositoryContract
 
     public function provideWidget(string $widgetClass, string $widgetName)
     {
-        if (!app()->bound($widgetName)) {
-            app()->bind($widgetName, $widgetClass);
-        }
+        BuildPackageDependencies::addDependencyClosure(function () use ($widgetClass, $widgetName) {
+            if (!app()->bound($widgetName)) {
+                app()->bind($widgetName, $widgetClass);
+            }
+        });
     }
 
     protected function createModuleBinding(string $moduleContract, string $moduleClass): ModuleComponent|null
