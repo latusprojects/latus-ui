@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use \Latus\UI\Components\Contracts\ModuleComponent as ModuleComponentContract;
 use Latus\UI\Components\Contracts\PageComponent;
+use Symfony\Component\ErrorHandler\Error\ClassNotFoundError;
 
 abstract class ModuleComponent extends Component implements ModuleComponentContract
 {
@@ -25,7 +26,9 @@ abstract class ModuleComponent extends Component implements ModuleComponentContr
 
     public function definePages(array $pages)
     {
-        $this->pages->merge($pages);
+        foreach ($pages as $pageType => $pageClass) {
+            $this->pages->put($pageType, $pageClass);
+        }
     }
 
     public function compose()
@@ -34,14 +37,16 @@ abstract class ModuleComponent extends Component implements ModuleComponentContr
     }
 
     /**
-     * @throws BindingResolutionException
+     * @throws ClassNotFoundError
      */
     public function getPage(string $name): PageComponent
     {
         if ($this->pages->has($name)) {
-            return app()->make($this->pages->get($name));
+            $pageClass = $this->pages->get($name);
+            return new $pageClass($this);
         }
 
-        return app()->make($this->pages->first());
+        $pageClass = $this->pages->first();
+        return new $pageClass($this);
     }
 }
