@@ -105,11 +105,11 @@ class ComponentRepository implements ComponentRepositoryContract
          * @var Setting $setting
          */
         $setting = $this->settingService->findByKey('disabled_modules');
-        $disabledModules = unserialize($setting->getValue());
+        $disabledModules = json_decode($setting->getValue(), true);
 
         if (!in_array($moduleContract, $disabledModules)) {
             $disabledModules[] = $moduleContract;
-            $this->settingService->setSettingValue($setting, serialize($disabledModules));
+            $this->settingService->setSettingValue($setting, json_encode($disabledModules));
         }
     }
 
@@ -119,11 +119,11 @@ class ComponentRepository implements ComponentRepositoryContract
          * @var Setting $setting
          */
         $setting = $this->settingService->findByKey('disabled_modules');
-        $disabledModules = unserialize($setting->getValue());
+        $disabledModules = json_decode($setting->getValue(), true);
         if ($key = array_search($moduleContract, $disabledModules)) {
 
             unset($disabledModules[$key]);
-            $this->settingService->setSettingValue($setting, serialize($disabledModules));
+            $this->settingService->setSettingValue($setting, json_encode($disabledModules));
         }
     }
 
@@ -133,7 +133,7 @@ class ComponentRepository implements ComponentRepositoryContract
          * @var Setting $setting
          */
         $setting = $this->settingService->findByKey('disabled_modules');
-        return unserialize($setting->getValue());
+        return json_decode($setting->getValue(), true);
     }
 
     public function getActiveModules(): array
@@ -142,6 +142,6 @@ class ComponentRepository implements ComponentRepositoryContract
          * @var Setting $setting
          */
         $setting = $this->settingService->findByKey('active_modules');
-        return unserialize($setting->getValue());
+        return json_decode($setting->getValue(), true);
     }
 }
