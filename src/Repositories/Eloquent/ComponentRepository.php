@@ -65,7 +65,7 @@ class ComponentRepository implements ComponentRepositoryContract
             $moduleInstance = app()->make($moduleClass);
             $moduleInstance->compose();
 
-            app()->singleton($moduleContract, $moduleInstance);
+            app()->instance($moduleContract, $moduleInstance);
 
             return $moduleInstance;
 
