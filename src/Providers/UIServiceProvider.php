@@ -11,6 +11,7 @@ use Latus\UI\Repositories\Contracts\ComponentRepository as ComponentRepositoryCo
 use Latus\UI\Repositories\Contracts\PageSettingRepository as PageSettingRepositoryContract;
 use Latus\UI\Repositories\Eloquent\ComponentRepository;
 use Latus\UI\Repositories\Eloquent\PageSettingRepository;
+use Latus\UI\Services\ComponentService;
 use Latus\UI\Widgets\AdminNav;
 
 class UIServiceProvider extends ServiceProvider
@@ -57,8 +58,13 @@ class UIServiceProvider extends ServiceProvider
 
         BuildPackageDependencies::addDependencyClosure(function () {
             $activeModules = json_decode(app(SettingService::class)->findByKey('active_modules')->getValue(), true);
+
+            /**
+             * @var ComponentService $componentService
+             */
+            $componentService = app(ComponentService::class);
             foreach ($activeModules as $moduleContract => $moduleClass) {
-                $this->app->bind($moduleContract, $moduleClass);
+                $componentService->createModuleBinding($moduleContract, $moduleClass);
             }
         });
     }
