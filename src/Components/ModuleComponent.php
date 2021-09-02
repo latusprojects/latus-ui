@@ -25,7 +25,9 @@ abstract class ModuleComponent extends Component implements ModuleComponentContr
 
     public function definePages(array $pages)
     {
-        $this->pages->merge($pages);
+        foreach ($pages as $pageType => $pageClass) {
+            $this->pages->put($pageType, $pageClass);
+        }
     }
 
     public function compose()
