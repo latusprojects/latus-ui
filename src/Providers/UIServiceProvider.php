@@ -56,7 +56,7 @@ class UIServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
 
         BuildPackageDependencies::addDependencyClosure(function () {
-            $activeModules = json_decode(app(SettingService::class)->findByKey('active_modules'), true);
+            $activeModules = json_decode(app(SettingService::class)->findByKey('active_modules')->getValue(), true);
             foreach ($activeModules as $moduleContract => $moduleClass) {
                 $this->app->bind($moduleContract, $moduleClass);
             }
