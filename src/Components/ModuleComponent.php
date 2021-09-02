@@ -31,7 +31,6 @@ abstract class ModuleComponent extends Component implements ModuleComponentContr
     public function compose()
     {
         $this->register();
-        app()->singleton(static::class, $this);
     }
 
     /**
