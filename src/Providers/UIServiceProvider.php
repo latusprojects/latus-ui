@@ -4,6 +4,8 @@ namespace Latus\UI\Providers;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
+use Latus\Laravel\Http\Middleware\BuildPackageDependencies;
+use Latus\Settings\Services\SettingService;
 use Latus\UI\Providers\Traits\ProvidesWidgets;
 use Latus\UI\Repositories\Contracts\ComponentRepository as ComponentRepositoryContract;
 use Latus\UI\Repositories\Contracts\PageSettingRepository as PageSettingRepositoryContract;
@@ -52,5 +54,12 @@ class UIServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+
+        BuildPackageDependencies::addDependencyClosure(function () {
+            $activeModules = json_decode(app(SettingService::class)->findByKey('active_modules'), true);
+            foreach ($activeModules as $moduleContract => $moduleClass) {
+                $this->app->bind($moduleContract, $moduleClass);
+            }
+        });
     }
 }
