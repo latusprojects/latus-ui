@@ -55,7 +55,7 @@ class ComponentRepository implements ComponentRepositoryContract
         });
     }
 
-    protected function createModuleBinding(string $moduleContract, string $moduleClass): ModuleComponent|null
+    public function createModuleBinding(string $moduleContract, string $moduleClass): ModuleComponent|null
     {
 
         try {
