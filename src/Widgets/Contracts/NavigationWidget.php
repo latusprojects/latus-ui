@@ -20,4 +20,8 @@ interface NavigationWidget
     public function putBefore(string $indexKey, array $items);
 
     public function putAfter(string $indexKey, array $items);
+
+    public function setReference(string $reference);
+
+    public function getReference(): string|null;
 }
