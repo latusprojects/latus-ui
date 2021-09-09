@@ -18,6 +18,13 @@ abstract class NavigationWidget extends WidgetComponent implements Contracts\Nav
 
     protected Collection $items;
 
+    /**
+     * Reference to the current navigation item, mostly for use in frontend
+     *
+     * @var string|null
+     */
+    protected string|null $reference;
+
     public static function getItemValidationRules(): array
     {
         return [
@@ -151,5 +158,15 @@ abstract class NavigationWidget extends WidgetComponent implements Contracts\Nav
         }
 
         $this->getItems()->putAfter($indexKey, $items);
+    }
+
+    public function setReference(string $reference)
+    {
+        $this->reference = $reference;
+    }
+
+    public function getReference(): string|null
+    {
+        return $this->reference;
     }
 }
