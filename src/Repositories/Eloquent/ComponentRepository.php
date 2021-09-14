@@ -9,6 +9,7 @@ use Latus\Settings\Models\Setting;
 use Latus\Settings\Services\SettingService;
 use Latus\UI\Components\Contracts\ModuleComponent;
 use Latus\UI\Repositories\Contracts\ComponentRepository as ComponentRepositoryContract;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ComponentRepository implements ComponentRepositoryContract
 {
@@ -74,28 +75,28 @@ class ComponentRepository implements ComponentRepositoryContract
         }
     }
 
-    public function getActiveModule(string $moduleContract): ModuleComponent|bool|null
+    /**
+     * @param string $moduleContract
+     * @return ModuleComponent
+     * @throws BindingResolutionException
+     * @throws NotFoundHttpException
+     */
+    public function getActiveModule(string $moduleContract): ModuleComponent
     {
 
         $activeModules = $this->getActiveModules();
 
         if (in_array($moduleContract, $this->getDisabledModules()) || !isset($activeModules[$moduleContract])) {
-            return false;
+            throw new NotFoundHttpException();
         }
 
-        try {
-            $moduleInstance = app()->make($moduleContract);
+        $moduleInstance = app()->make($moduleContract);
 
-            if (get_class($moduleInstance) === $activeModules[$moduleContract]) {
-                return $moduleInstance;
-            }
-
-            return $this->createModuleBinding($moduleContract, $activeModules[$moduleContract]);
-
-        } catch (BindingResolutionException $e) {
-            return null;
+        if (get_class($moduleInstance) === $activeModules[$moduleContract]) {
+            return $moduleInstance;
         }
 
+        return $this->createModuleBinding($moduleContract, $activeModules[$moduleContract]);
     }
 
 
