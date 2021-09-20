@@ -30,6 +30,11 @@ class ComponentService
         $this->componentRepository->provideWidget($widgetClass, $widgetName);
     }
 
+    public function createModuleBinding(string $moduleContract, string $moduleClass): ModuleComponent|null
+    {
+        return $this->componentRepository->createModuleBinding($moduleContract, $moduleClass);
+    }
+
     public function getActiveModule(string $moduleContract): ModuleComponent|null
     {
         return $this->componentRepository->getActiveModule($moduleContract);

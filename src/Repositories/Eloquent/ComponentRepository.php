@@ -9,6 +9,7 @@ use Latus\Settings\Models\Setting;
 use Latus\Settings\Services\SettingService;
 use Latus\UI\Components\Contracts\ModuleComponent;
 use Latus\UI\Repositories\Contracts\ComponentRepository as ComponentRepositoryContract;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ComponentRepository implements ComponentRepositoryContract
 {
@@ -55,7 +56,7 @@ class ComponentRepository implements ComponentRepositoryContract
         });
     }
 
-    protected function createModuleBinding(string $moduleContract, string $moduleClass): ModuleComponent|null
+    public function createModuleBinding(string $moduleContract, string $moduleClass): ModuleComponent|null
     {
 
         try {
@@ -65,7 +66,7 @@ class ComponentRepository implements ComponentRepositoryContract
             $moduleInstance = app()->make($moduleClass);
             $moduleInstance->compose();
 
-            app()->singleton($moduleContract, $moduleInstance);
+            app()->instance($moduleContract, $moduleInstance);
 
             return $moduleInstance;
 
@@ -74,28 +75,28 @@ class ComponentRepository implements ComponentRepositoryContract
         }
     }
 
-    public function getActiveModule(string $moduleContract): ModuleComponent|bool|null
+    /**
+     * @param string $moduleContract
+     * @return ModuleComponent
+     * @throws BindingResolutionException
+     * @throws NotFoundHttpException
+     */
+    public function getActiveModule(string $moduleContract): ModuleComponent
     {
 
         $activeModules = $this->getActiveModules();
 
         if (in_array($moduleContract, $this->getDisabledModules()) || !isset($activeModules[$moduleContract])) {
-            return false;
+            throw new NotFoundHttpException();
         }
 
-        try {
-            $moduleInstance = app()->make($moduleContract);
+        $moduleInstance = app()->make($moduleContract);
 
-            if (get_class($moduleInstance) === $activeModules[$moduleContract]) {
-                return $moduleInstance;
-            }
-
-            return $this->createModuleBinding($moduleContract, $activeModules[$moduleContract]);
-
-        } catch (BindingResolutionException $e) {
-            return null;
+        if (get_class($moduleInstance) === $activeModules[$moduleContract]) {
+            return $moduleInstance;
         }
 
+        return $this->createModuleBinding($moduleContract, $activeModules[$moduleContract]);
     }
 
 
@@ -105,11 +106,11 @@ class ComponentRepository implements ComponentRepositoryContract
          * @var Setting $setting
          */
         $setting = $this->settingService->findByKey('disabled_modules');
-        $disabledModules = unserialize($setting->getValue());
+        $disabledModules = json_decode($setting->getValue(), true);
 
         if (!in_array($moduleContract, $disabledModules)) {
             $disabledModules[] = $moduleContract;
-            $this->settingService->setSettingValue($setting, serialize($disabledModules));
+            $this->settingService->setSettingValue($setting, json_encode($disabledModules));
         }
     }
 
@@ -119,11 +120,11 @@ class ComponentRepository implements ComponentRepositoryContract
          * @var Setting $setting
          */
         $setting = $this->settingService->findByKey('disabled_modules');
-        $disabledModules = unserialize($setting->getValue());
+        $disabledModules = json_decode($setting->getValue(), true);
         if ($key = array_search($moduleContract, $disabledModules)) {
 
             unset($disabledModules[$key]);
-            $this->settingService->setSettingValue($setting, serialize($disabledModules));
+            $this->settingService->setSettingValue($setting, json_encode($disabledModules));
         }
     }
 
@@ -133,7 +134,7 @@ class ComponentRepository implements ComponentRepositoryContract
          * @var Setting $setting
          */
         $setting = $this->settingService->findByKey('disabled_modules');
-        return unserialize($setting->getValue());
+        return json_decode($setting->getValue(), true);
     }
 
     public function getActiveModules(): array
@@ -142,6 +143,6 @@ class ComponentRepository implements ComponentRepositoryContract
          * @var Setting $setting
          */
         $setting = $this->settingService->findByKey('active_modules');
-        return unserialize($setting->getValue());
+        return json_decode($setting->getValue(), true);
     }
 }

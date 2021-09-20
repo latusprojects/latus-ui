@@ -13,7 +13,9 @@ interface ComponentRepository
 
     public function provideWidget(string $widgetClass, string $widgetName);
 
-    public function getActiveModule(string $moduleContract): ModuleComponent|bool|null;
+    public function createModuleBinding(string $moduleContract, string $moduleClass): ModuleComponent|null;
+
+    public function getActiveModule(string $moduleContract): ModuleComponent;
 
     public function getDisabledModules(): array;
 
