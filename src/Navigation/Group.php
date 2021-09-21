@@ -126,18 +126,18 @@ class Group implements BuilderProvider
      * @param string $name
      * @param array $attributes
      * @param string|array|\Closure|null $authorize
-     * @return Group
-     * @throws BuilderNotDefinedException|ParentNotDefinedException
+     * @return Item
+     * @throws BuilderNotDefinedException
+     * @throws ParentNotDefinedException
      */
-    public function item(string $name, array $attributes = [], string|array|\Closure|null $authorize = null): self
+    public function item(string $name, array $attributes = [], string|array|\Closure|null $authorize = null): Item
     {
 
         self::tryItemAttributes($attributes);
 
         $this->ensureItemExists($name, $attributes, $authorize);
 
-        return $this;
-
+        return $this->items->get($name);
     }
 
     protected function getCompilableItemCollection(): Collection

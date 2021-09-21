@@ -196,14 +196,14 @@ class Item implements BuilderProvider
      * @throws BuilderNotDefinedException
      * @throws ParentNotDefinedException
      */
-    public function subItem(string $name, array $attributes = [], string|array|\Closure|null $authorize = null): self
+    public function subItem(string $name, array $attributes = [], string|array|\Closure|null $authorize = null): Item
     {
 
         Group::tryItemAttributes($attributes);
 
         $this->ensureSubItemExists($name, $attributes, $authorize);
 
-        return $this;
+        return $this->subItems->get($name);
     }
 
     protected function getCompilableItemCollection(): Collection
