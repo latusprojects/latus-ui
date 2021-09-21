@@ -7,6 +7,7 @@ namespace Latus\UI\Navigation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Latus\UI\Exceptions\BuilderNotDefinedException;
+use Latus\UI\Exceptions\ParentNotDefinedException;
 use Latus\UI\Navigation\Contracts\BuilderProvider;
 use Latus\UI\Navigation\Traits\HasCompilableItems;
 use Latus\UI\Navigation\Traits\PrependsAndAppendsItems;
@@ -39,19 +40,29 @@ class Group implements BuilderProvider
 
     /**
      * @throws BuilderNotDefinedException
+     * @throws ParentNotDefinedException
+     */
+    public static function createItemObject(Group|Item $parent, string $itemName, array $attributes = [], string|array|\Closure|null $authorize = null): Item
+    {
+        $label = $attributes['label'] ?? $itemName;
+        $icon = $attributes['icon'] ?? '';
+        $url = $attributes['url'] ?? '';
+        $view = $attributes['view'] ?? null;
+
+        $item = new Item($itemName, $label, $icon, $url, $view, $authorize);
+        $item->setParent($parent);
+
+        return $item;
+    }
+
+    /**
+     * @throws BuilderNotDefinedException
+     * @throws ParentNotDefinedException
      */
     protected function ensureItemExists(string $itemName, array $attributes = [], string|array|\Closure|null $authorize = null): void
     {
         if (!$this->items->has($itemName)) {
-            $label = $attributes['label'] ?? $itemName;
-            $icon = $attributes['icon'] ?? '';
-            $url = $attributes['url'] ?? '';
-            $view = $attributes['view'] ?? null;
-
-            $item = new Item($itemName, $label, $icon, $url, $view, $authorize);
-            $item->setGroup($this);
-
-            $this->items->put($itemName, $item);
+            $this->items->put($itemName, self::createItemObject($this, $itemName, $attributes, $authorize));
         }
     }
 
@@ -101,7 +112,7 @@ class Group implements BuilderProvider
         return $this;
     }
 
-    protected function tryItemAttributes(array $attributes)
+    public static function tryItemAttributes(array $attributes)
     {
         $validator = Validator::make($attributes, self::ITEM_VALIDATION_RULES);
 
@@ -114,13 +125,14 @@ class Group implements BuilderProvider
     /**
      * @param string $name
      * @param array $attributes
+     * @param string|array|\Closure|null $authorize
      * @return Group
-     * @throws BuilderNotDefinedException
+     * @throws BuilderNotDefinedException|ParentNotDefinedException
      */
     public function item(string $name, array $attributes = [], string|array|\Closure|null $authorize = null): self
     {
 
-        $this->tryItemAttributes($attributes);
+        self::tryItemAttributes($attributes);
 
         $this->ensureItemExists($name, $attributes, $authorize);
 
