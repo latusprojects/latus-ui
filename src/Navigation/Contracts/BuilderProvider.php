@@ -12,4 +12,6 @@ interface BuilderProvider
     public function setBuilder(Builder &$builder): void;
 
     public function &builder(): Builder|null;
+
+    public function authorized(): bool;
 }
