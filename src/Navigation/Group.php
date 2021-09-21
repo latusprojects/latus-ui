@@ -6,39 +6,95 @@ namespace Latus\UI\Navigation;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
+use Latus\UI\Exceptions\BuilderNotDefinedException;
+use Latus\UI\Navigation\Contracts\BuilderProvider;
+use Latus\UI\Navigation\Traits\HasCompilableItems;
+use Latus\UI\Navigation\Traits\PrependsAndAppendsItems;
+use Latus\UI\Navigation\Traits\ProvidesBuilder;
 
-class Group
+class Group implements BuilderProvider
 {
+    use ProvidesBuilder, HasCompilableItems, PrependsAndAppendsItems;
+
     protected Collection $items;
-    protected Collection $itemViews;
-    protected Collection $queuedItems;
 
     public const ITEM_VALIDATION_RULES = [
         'label' => 'sometimes|string|min:3|max:255',
         'icon' => 'sometimes|string|min:1|max:255',
-        'url' => 'sometimes|string|min:3|max:255'
+        'url' => 'sometimes|string|min:3|max:255',
+        'view' => 'sometimes|string|min:1|max:255'
     ];
 
     public function __construct(
         protected string      $name,
         protected string      $label,
+        protected string|null $icon = null,
         protected string|null $url = null)
     {
         $this->items = new Collection();
-        $this->itemViews = new Collection();
-        $this->queuedItems = new Collection();
     }
 
-    public function removeItem(string $name): self
+    /**
+     * @throws BuilderNotDefinedException
+     */
+    protected function ensureItemExists(string $itemName, array $attributes = []): void
     {
-        if ($this->items->has($name)) {
-            $this->items->forget($name);
-        }
+        if (!$this->items->has($itemName)) {
+            $label = $attributes['label'] ?? $itemName;
+            $icon = $attributes['icon'] ?? '';
+            $url = $attributes['url'] ?? '';
+            $view = $attributes['view'] ?? null;
 
-        if ($this->itemViews->has($name)) {
-            $this->itemViews->forget($name);
-        }
+            $item = new Item($itemName, $label, $icon, $url, $view);
+            $item->setGroup($this);
 
+            $this->items->put($itemName, $item);
+        }
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    public function setLabel(string $label): self
+    {
+        $this->label = $label;
+        return $this;
+    }
+
+    public function getIcon(): string|null
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(string $icon): self
+    {
+        $this->icon = $icon;
+        return $this;
+    }
+
+    public function getUrl(string $url): string|null
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): self
+    {
+        $this->url = $url;
+        return $this;
+    }
+
+    public function removeItem(string $itemName): self
+    {
+        if ($this->items->has($itemName)) {
+            $this->items->forget($itemName);
+        }
         return $this;
     }
 
@@ -51,52 +107,35 @@ class Group
         }
     }
 
-    public function putItemBefore(string $item, array $attributes, string $before, array|\Closure $view = null): self
-    {
-
-        $this->tryItemAttributes($attributes);
-
-        if ($view) {
-            $this->itemViews->put($item, $view);
-        }
-
-
-        if ($this->items->has($before)) {
-
-            $this->queuedItems->
-
-            $this->items->putBefore($item, $attributes, $before);
-        } else {
-            if (!$this->queuedItems->has($before)) {
-                $this->queuedItems->put($before, ['before' => [], 'after' => []]);
-            }
-
-            $this->queuedItems->get($before);
-
-        }
-
-
-        return $this;
-    }
 
     /**
      * @param string $name
      * @param array $attributes
-     * @param array|\Closure|null $view
+     * @param string|null $view
+     * @return Group
+     * @throws BuilderNotDefinedException
      */
-    public function putItem(string $name, array $attributes, array|\Closure $view = null): self
+    public function item(string $name, array $attributes, string $view = null): self
     {
 
         $this->tryItemAttributes($attributes);
 
-        if ($view) {
-            $this->itemViews->put($name, $view);
-        }
-
-        $this->items->put($name, $attributes);
+        $this->ensureItemExists($name, $attributes);
 
         return $this;
 
     }
 
+    protected function getCompilableItemCollection(): Collection
+    {
+        return $this->items;
+    }
+
+    /**
+     * @throws BuilderNotDefinedException
+     */
+    protected function compilerInstance(): ?Builder
+    {
+        return $this->builder();
+    }
 }

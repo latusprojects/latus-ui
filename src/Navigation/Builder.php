@@ -5,24 +5,44 @@ namespace Latus\UI\Navigation;
 
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Traits\Macroable;
+use Latus\UI\Navigation\Traits\HasCompilableItems;
 
 class Builder
 {
+    use Macroable, HasCompilableItems;
+
     protected Collection $groups;
-    protected Collection $rawItems;
-    protected Collection|null $compiledItems;
 
     public function __construct()
     {
         $this->groups = new Collection();
-        $this->rawItems = new Collection();
-        $this->compiledItems = null;
     }
 
-    public function putInGroup()
+    protected function ensureGroupExists(string $groupName): void
     {
-        
+        if (!$this->groups->has($groupName)) {
+            $group = new Group($groupName, $groupName);
+
+            $group->setBuilder($this);
+            $this->groups->put($groupName, $group);
+        }
     }
 
+    public function group(string $groupName): Group
+    {
+        $this->ensureGroupExists($groupName);
 
+        return $this->groups->get($groupName);
+    }
+
+    public function groups(): Collection
+    {
+        return $this->groups;
+    }
+
+    protected function getCompilableItemCollection(): Collection
+    {
+        return $this->groups();
+    }
 }
