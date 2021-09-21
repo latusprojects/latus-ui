@@ -4,6 +4,7 @@
 namespace Latus\UI\Widgets;
 
 
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Latus\UI\Components\WidgetComponent;
 use Latus\UI\Navigation\Builder;
@@ -33,9 +34,9 @@ abstract class NavigationWidget extends WidgetComponent implements Contracts\Nav
     }
 
 
-    public function resolvesData(): array|null
+    public function resolvesData(): Collection|array|null
     {
-        return $this->builder()->compileItems()->toArray();
+        return $this->builder()->compileItems();
     }
 
     public function register()
