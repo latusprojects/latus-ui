@@ -117,7 +117,7 @@ class Group implements BuilderProvider
      * @return Group
      * @throws BuilderNotDefinedException
      */
-    public function item(string $name, array $attributes, string|array|\Closure|null $authorize = null): self
+    public function item(string $name, array $attributes = [], string|array|\Closure|null $authorize = null): self
     {
 
         $this->tryItemAttributes($attributes);
