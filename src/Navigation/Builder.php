@@ -19,19 +19,19 @@ class Builder
         $this->groups = new Collection();
     }
 
-    protected function ensureGroupExists(string $groupName): void
+    protected function ensureGroupExists(string $groupName, string|array|\Closure|null $authorize = null): void
     {
         if (!$this->groups->has($groupName)) {
-            $group = new Group($groupName, $groupName);
+            $group = new Group($groupName, $groupName, $authorize);
 
             $group->setBuilder($this);
             $this->groups->put($groupName, $group);
         }
     }
 
-    public function group(string $groupName): Group
+    public function group(string $groupName, string|array|\Closure|null $authorize = null): Group
     {
-        $this->ensureGroupExists($groupName);
+        $this->ensureGroupExists($groupName, $authorize);
 
         return $this->groups->get($groupName);
     }

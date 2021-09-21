@@ -10,6 +10,7 @@ trait HasCompilableItems
 
     protected array $beforeItems = [];
     protected array $afterItems = [];
+    protected bool $ignoresAuthorization = false;
 
     protected Collection $compiledItems;
 
@@ -54,11 +55,13 @@ trait HasCompilableItems
         return $this;
     }
 
-    public function compileItems(bool $force = false): Collection
+    public function compileItems(bool $ignoreAuthorization = false, bool $force = false): Collection
     {
         if (!$force && isset($this->{'compiledItems'})) {
             return $this->compiledItems;
         }
+
+        $this->ignoresAuthorization = $ignoreAuthorization;
 
         $rawItems = clone $this->getCompilableItemCollection();
 
@@ -90,7 +93,9 @@ trait HasCompilableItems
             }
         }
 
-        $tempCollection->put($item->getName(), $item);
+        if ($this->ignoresAuthorization || $item->authorized()) {
+            $tempCollection->put($item->getName(), $item);
+        }
 
         if (isset($this->afterItems[$item->getName()])) {
             foreach ($this->afterItems[$item->getName()] as $afterItemName) {
