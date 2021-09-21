@@ -5,6 +5,7 @@ namespace Latus\UI\Components\Contracts;
 
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 interface WidgetComponent extends Component
 {
@@ -15,7 +16,7 @@ interface WidgetComponent extends Component
 
     public function getFullName(): string;
 
-    public function resolvesData(): array|null;
+    public function resolvesData(): Collection|array|null;
 
     public function authorizeRequest(Request $request): bool;
 

@@ -30,23 +30,11 @@ class AdminNav extends NavigationWidget
 
     public function authorizeRequest(Request $request): bool
     {
-        $permission = $this->permissionService->findByName(self::MASTER_PERMISSION);
-
         /**
          * @var User $user
          */
         $user = auth()->user();
 
-        return $this->userService->userHasPermission($user, $permission);
-    }
-
-    public function levels(): int
-    {
-        return 2;
-    }
-
-    public function supportsPermissions(): bool
-    {
-        return true;
+        return $this->userService->userHasPermissionByString($user, self::MASTER_PERMISSION);
     }
 }
