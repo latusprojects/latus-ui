@@ -2,18 +2,23 @@
 
 namespace Latus\UI\Navigation;
 
+use Illuminate\Support\Collection;
 use Latus\UI\Exceptions\BuilderNotDefinedException;
-use Latus\UI\Exceptions\GroupNotDefinedException;
+use Latus\UI\Exceptions\ParentNotDefinedException;
 use Latus\UI\Navigation\Contracts\BuilderProvider;
+use Latus\UI\Navigation\Traits\HasCompilableItems;
 use Latus\UI\Navigation\Traits\PrependsAndAppendsItems;
 use Latus\UI\Navigation\Traits\ProvidesBuilder;
 use Latus\UI\Navigation\Traits\SupportsAuthorization;
 
 class Item implements BuilderProvider
 {
-    use ProvidesBuilder, PrependsAndAppendsItems, SupportsAuthorization;
+    use ProvidesBuilder, PrependsAndAppendsItems, SupportsAuthorization, HasCompilableItems;
 
-    protected string $groupName;
+    protected string $parentName;
+    protected string $parentClass;
+    protected string $parentGroupName;
+    protected Collection $subItems;
 
     public function __construct(
         protected string                     $name,
@@ -24,6 +29,7 @@ class Item implements BuilderProvider
         protected string|array|\Closure|null $authorize = null
     )
     {
+        $this->subItems = new Collection();
     }
 
     /**
@@ -103,10 +109,10 @@ class Item implements BuilderProvider
     }
 
     /**
-     * @throws GroupNotDefinedException
+     * @throws ParentNotDefinedException
      * @throws BuilderNotDefinedException
      */
-    public function remove(): Group
+    public function remove(): Group|Item
     {
         return $this->parent()->removeItem($this->getName());
     }
@@ -118,31 +124,98 @@ class Item implements BuilderProvider
 
     /**
      * @throws BuilderNotDefinedException
+     * @throws ParentNotDefinedException
      */
-    public function setGroup(Group &$group): void
+    public function setParent(Group|Item &$parent): void
     {
-        $this->groupName = $group->getName();
-        $this->setBuilder($group->builder());
+        $this->parentName = $parent->getName();
+        $this->parentClass = get_class($parent);
+
+        if ($parent instanceof Item) {
+            $this->parentGroupName = $parent->relatedGroup()->getName();
+        }
+
+        $this->setBuilder($parent->builder());
     }
 
     /**
-     * @throws GroupNotDefinedException
+     * @throws ParentNotDefinedException
      * @throws BuilderNotDefinedException
      */
-    public function parent(): Group
+    public function parent(): Group|Item
     {
-        if (!isset($this->{'groupName'})) {
-            throw new GroupNotDefinedException('No parent-group was defined but is required. Items must always have a reference of a parent-group-instance.');
+        if (!isset($this->{'parentName'}) || !isset($this->{'parentClass'})) {
+            throw new ParentNotDefinedException('No parent was defined but is required. Items must always have a reference of a parent-instance.');
         }
-        return $this->builder()->group($this->groupName);
+
+        if ($this->parentClass === Group::class) {
+            return $this->relatedGroup();
+        }
+
+        return $this->relatedGroup()->item($this->parentName);
     }
 
     /**
-     * @throws GroupNotDefinedException
+     * @throws BuilderNotDefinedException
+     * @throws ParentNotDefinedException
+     */
+    public function relatedGroup(): Group
+    {
+        if ($this->parentClass === Group::class) {
+            return $this->parent();
+        }
+
+        return $this->builder()->group($this->parentGroupName);
+    }
+
+    /**
+     * @throws ParentNotDefinedException
      * @throws BuilderNotDefinedException
      */
     protected function compilerInstance(): Group
     {
         return $this->parent();
+    }
+
+    /**
+     * @throws BuilderNotDefinedException
+     * @throws ParentNotDefinedException
+     */
+    protected function ensureSubItemExists(string $itemName, array $attributes = [], string|array|\Closure|null $authorize = null): void
+    {
+        if (!$this->subItems->has($itemName)) {
+            $this->subItems->put($itemName, Group::createItemObject($this, $itemName, $attributes, $authorize));
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param array $attributes
+     * @param string|array|\Closure|null $authorize
+     * @return Item
+     * @throws BuilderNotDefinedException
+     * @throws ParentNotDefinedException
+     */
+    public function subItem(string $name, array $attributes = [], string|array|\Closure|null $authorize = null): self
+    {
+
+        Group::tryItemAttributes($attributes);
+
+        $this->ensureSubItemExists($name, $attributes, $authorize);
+
+        return $this;
+    }
+
+    protected function getCompilableItemCollection(): Collection
+    {
+        return $this->subItems;
+    }
+
+    public function removeItem(string $itemName): self
+    {
+        if ($this->subItems->has($itemName)) {
+            $this->subItems->forget($itemName);
+        }
+        return $this;
     }
 }

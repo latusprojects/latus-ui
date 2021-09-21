@@ -3,12 +3,12 @@
 namespace Latus\UI\Navigation\Traits;
 
 use Latus\UI\Exceptions\BuilderNotDefinedException;
-use Latus\UI\Exceptions\GroupNotDefinedException;
+use Latus\UI\Exceptions\ParentNotDefinedException;
 
 trait PrependsAndAppendsItems
 {
     /**
-     * @throws GroupNotDefinedException
+     * @throws ParentNotDefinedException
      * @throws BuilderNotDefinedException
      */
     public function prepend(string $itemName): self
@@ -18,7 +18,7 @@ trait PrependsAndAppendsItems
     }
 
     /**
-     * @throws GroupNotDefinedException
+     * @throws ParentNotDefinedException
      * @throws BuilderNotDefinedException
      */
     public function append(string $itemName): self
