@@ -11,10 +11,11 @@ use Latus\UI\Navigation\Contracts\BuilderProvider;
 use Latus\UI\Navigation\Traits\HasCompilableItems;
 use Latus\UI\Navigation\Traits\PrependsAndAppendsItems;
 use Latus\UI\Navigation\Traits\ProvidesBuilder;
+use Latus\UI\Navigation\Traits\SupportsAuthorization;
 
 class Group implements BuilderProvider
 {
-    use ProvidesBuilder, HasCompilableItems, PrependsAndAppendsItems;
+    use ProvidesBuilder, HasCompilableItems, PrependsAndAppendsItems, SupportsAuthorization;
 
     protected Collection $items;
 
@@ -26,10 +27,12 @@ class Group implements BuilderProvider
     ];
 
     public function __construct(
-        protected string      $name,
-        protected string      $label,
-        protected string|null $icon = null,
-        protected string|null $url = null)
+        protected string                     $name,
+        protected string                     $label,
+        protected string|null                $icon = null,
+        protected string|null                $url = null,
+        protected string|array|\Closure|null $authorize = null,
+    )
     {
         $this->items = new Collection();
     }
@@ -37,7 +40,7 @@ class Group implements BuilderProvider
     /**
      * @throws BuilderNotDefinedException
      */
-    protected function ensureItemExists(string $itemName, array $attributes = []): void
+    protected function ensureItemExists(string $itemName, array $attributes = [], string|array|\Closure|null $authorize = null): void
     {
         if (!$this->items->has($itemName)) {
             $label = $attributes['label'] ?? $itemName;
@@ -45,7 +48,7 @@ class Group implements BuilderProvider
             $url = $attributes['url'] ?? '';
             $view = $attributes['view'] ?? null;
 
-            $item = new Item($itemName, $label, $icon, $url, $view);
+            $item = new Item($itemName, $label, $icon, $url, $view, $authorize);
             $item->setGroup($this);
 
             $this->items->put($itemName, $item);
@@ -111,16 +114,15 @@ class Group implements BuilderProvider
     /**
      * @param string $name
      * @param array $attributes
-     * @param string|null $view
      * @return Group
      * @throws BuilderNotDefinedException
      */
-    public function item(string $name, array $attributes, string $view = null): self
+    public function item(string $name, array $attributes, string|array|\Closure|null $authorize = null): self
     {
 
         $this->tryItemAttributes($attributes);
 
-        $this->ensureItemExists($name, $attributes);
+        $this->ensureItemExists($name, $attributes, $authorize);
 
         return $this;
 

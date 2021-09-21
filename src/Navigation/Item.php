@@ -7,19 +7,21 @@ use Latus\UI\Exceptions\GroupNotDefinedException;
 use Latus\UI\Navigation\Contracts\BuilderProvider;
 use Latus\UI\Navigation\Traits\PrependsAndAppendsItems;
 use Latus\UI\Navigation\Traits\ProvidesBuilder;
+use Latus\UI\Navigation\Traits\SupportsAuthorization;
 
 class Item implements BuilderProvider
 {
-    use ProvidesBuilder, PrependsAndAppendsItems;
+    use ProvidesBuilder, PrependsAndAppendsItems, SupportsAuthorization;
 
     protected string $groupName;
 
     public function __construct(
-        protected string      $name,
-        protected string      $label,
-        protected string      $icon,
-        protected string      $url,
-        protected string|null $view,
+        protected string                     $name,
+        protected string                     $label,
+        protected string                     $icon,
+        protected string                     $url,
+        protected string|null                $view,
+        protected string|array|\Closure|null $authorize = null
     )
     {
     }
@@ -34,10 +36,13 @@ class Item implements BuilderProvider
 
     /**
      * @param string $label
+     * @return Item
      */
-    public function setLabel(string $label): void
+    public function setLabel(string $label): self
     {
         $this->label = $label;
+
+        return $this;
     }
 
     /**
@@ -50,10 +55,13 @@ class Item implements BuilderProvider
 
     /**
      * @param string $icon
+     * @return Item
      */
-    public function setIcon(string $icon): void
+    public function setIcon(string $icon): self
     {
         $this->icon = $icon;
+
+        return $this;
     }
 
     /**
@@ -66,10 +74,13 @@ class Item implements BuilderProvider
 
     /**
      * @param string $url
+     * @return Item
      */
-    public function setUrl(string $url): void
+    public function setUrl(string $url): self
     {
         $this->url = $url;
+
+        return $this;
     }
 
     /**
@@ -82,10 +93,13 @@ class Item implements BuilderProvider
 
     /**
      * @param string|null $view
+     * @return Item
      */
-    public function setView(?string $view): void
+    public function setView(?string $view): self
     {
         $this->view = $view;
+
+        return $this;
     }
 
     /**
