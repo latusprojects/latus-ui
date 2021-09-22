@@ -7,13 +7,14 @@ use Latus\UI\Exceptions\BuilderNotDefinedException;
 use Latus\UI\Exceptions\ParentNotDefinedException;
 use Latus\UI\Navigation\Contracts\BuilderProvider;
 use Latus\UI\Navigation\Traits\HasCompilableItems;
+use Latus\UI\Navigation\Traits\LocalizesLabel;
 use Latus\UI\Navigation\Traits\PrependsAndAppendsItems;
 use Latus\UI\Navigation\Traits\ProvidesBuilder;
 use Latus\UI\Navigation\Traits\SupportsAuthorization;
 
 class Item implements BuilderProvider
 {
-    use ProvidesBuilder, PrependsAndAppendsItems, SupportsAuthorization, HasCompilableItems;
+    use ProvidesBuilder, PrependsAndAppendsItems, SupportsAuthorization, HasCompilableItems, LocalizesLabel;
 
     protected string $parentName;
     protected string $parentClass;
@@ -124,7 +125,6 @@ class Item implements BuilderProvider
 
     /**
      * @throws BuilderNotDefinedException
-     * @throws ParentNotDefinedException
      */
     public function setParent(Group|Item &$parent): void
     {
@@ -157,12 +157,11 @@ class Item implements BuilderProvider
 
     /**
      * @throws BuilderNotDefinedException
-     * @throws ParentNotDefinedException
      */
     public function relatedGroup(): Group
     {
         if ($this->parentClass === Group::class) {
-            return $this->parent();
+            return $this->builder()->group($this->parentName);
         }
 
         return $this->builder()->group($this->parentGroupName);
@@ -179,7 +178,6 @@ class Item implements BuilderProvider
 
     /**
      * @throws BuilderNotDefinedException
-     * @throws ParentNotDefinedException
      */
     protected function ensureSubItemExists(string $itemName, array $attributes = [], string|array|\Closure|null $authorize = null): void
     {
@@ -194,7 +192,6 @@ class Item implements BuilderProvider
      * @param string|array|\Closure|null $authorize
      * @return Item
      * @throws BuilderNotDefinedException
-     * @throws ParentNotDefinedException
      */
     public function subItem(string $name, array $attributes = [], string|array|\Closure|null $authorize = null): Item
     {

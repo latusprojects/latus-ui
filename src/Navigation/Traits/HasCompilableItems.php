@@ -89,7 +89,9 @@ trait HasCompilableItems
 
         if (isset($this->beforeItems[$item->getName()])) {
             foreach ($this->beforeItems[$item->getName()] as $beforeItemName) {
-                $this->fetchBeforeAndAfterItems($rawItems->get($beforeItemName), $rawItems, $tempCollection);
+                if (($beforeItem = $rawItems->get($beforeItemName))) {
+                    $this->fetchBeforeAndAfterItems($beforeItem, $rawItems, $tempCollection);
+                }
             }
         }
 
@@ -99,7 +101,9 @@ trait HasCompilableItems
 
         if (isset($this->afterItems[$item->getName()])) {
             foreach ($this->afterItems[$item->getName()] as $afterItemName) {
-                $this->fetchBeforeAndAfterItems($rawItems->get($afterItemName), $rawItems, $tempCollection);
+                if (($afterItem = $rawItems->get($afterItemName))) {
+                    $this->fetchBeforeAndAfterItems($afterItem, $rawItems, $tempCollection);
+                }
             }
         }
 
