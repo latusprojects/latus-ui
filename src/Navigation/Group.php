@@ -28,13 +28,14 @@ class Group implements BuilderProvider
     ];
 
     public function __construct(
-        protected string                     $name,
-        protected string                     $label,
-        protected string|null                $icon = null,
-        protected string|null                $url = null,
-        protected string|array|\Closure|null $authorize = null,
+        protected string           $name,
+        protected string           $label,
+        protected string|null      $icon = null,
+        protected string|null      $url = null,
+        string|array|\Closure|null $authorize = null,
     )
     {
+        $this->authorize = $authorize;
         $this->items = new Collection();
     }
 

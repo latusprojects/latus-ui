@@ -22,14 +22,15 @@ class Item implements BuilderProvider
     protected Collection $subItems;
 
     public function __construct(
-        protected string                     $name,
-        protected string                     $label,
-        protected string                     $icon,
-        protected string                     $url,
-        protected string|null                $view,
-        protected string|array|\Closure|null $authorize = null
+        protected string           $name,
+        protected string           $label,
+        protected string           $icon,
+        protected string           $url,
+        protected string|null      $view,
+        string|array|\Closure|null $authorize = null
     )
     {
+        $this->authorize = $authorize;
         $this->subItems = new Collection();
     }
 
