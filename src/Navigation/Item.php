@@ -157,12 +157,11 @@ class Item implements BuilderProvider
 
     /**
      * @throws BuilderNotDefinedException
-     * @throws ParentNotDefinedException
      */
     public function relatedGroup(): Group
     {
         if ($this->parentClass === Group::class) {
-            return $this->parent();
+            return $this->builder()->group($this->parentName);
         }
 
         return $this->builder()->group($this->parentGroupName);
