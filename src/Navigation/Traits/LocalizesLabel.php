@@ -14,8 +14,8 @@ trait LocalizesLabel
             return trans($label);
         }
 
-        if (trans()->has('nav.' . $label)) {
-            return trans('nav.' . $label);
+        if (trans()->has('latus::nav.' . $label)) {
+            return trans('latus::nav.' . $label);
         }
 
         return $label;
