@@ -46,7 +46,7 @@ trait SupportsAuthorization
         }
 
         foreach ($this->authorize as $permissionString) {
-            if (!$this->getUserService()->userHasOnePermissionByStrings($user, $permissionString)) {
+            if (!$this->getUserService()->userHasPermissionByString($user, $permissionString)) {
                 return false;
             }
         }
