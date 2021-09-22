@@ -7,16 +7,16 @@ namespace Latus\UI\Navigation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Latus\UI\Exceptions\BuilderNotDefinedException;
-use Latus\UI\Exceptions\ParentNotDefinedException;
 use Latus\UI\Navigation\Contracts\BuilderProvider;
 use Latus\UI\Navigation\Traits\HasCompilableItems;
+use Latus\UI\Navigation\Traits\LocalizesLabel;
 use Latus\UI\Navigation\Traits\PrependsAndAppendsItems;
 use Latus\UI\Navigation\Traits\ProvidesBuilder;
 use Latus\UI\Navigation\Traits\SupportsAuthorization;
 
 class Group implements BuilderProvider
 {
-    use ProvidesBuilder, HasCompilableItems, PrependsAndAppendsItems, SupportsAuthorization;
+    use ProvidesBuilder, HasCompilableItems, PrependsAndAppendsItems, SupportsAuthorization, LocalizesLabel;
 
     protected Collection $items;
 
@@ -40,7 +40,6 @@ class Group implements BuilderProvider
 
     /**
      * @throws BuilderNotDefinedException
-     * @throws ParentNotDefinedException
      */
     public static function createItemObject(Group|Item $parent, string $itemName, array $attributes = [], string|array|\Closure|null $authorize = null): Item
     {
@@ -57,7 +56,6 @@ class Group implements BuilderProvider
 
     /**
      * @throws BuilderNotDefinedException
-     * @throws ParentNotDefinedException
      */
     protected function ensureItemExists(string $itemName, array $attributes = [], string|array|\Closure|null $authorize = null): void
     {
@@ -128,7 +126,6 @@ class Group implements BuilderProvider
      * @param string|array|\Closure|null $authorize
      * @return Item
      * @throws BuilderNotDefinedException
-     * @throws ParentNotDefinedException
      */
     public function item(string $name, array $attributes = [], string|array|\Closure|null $authorize = null): Item
     {
