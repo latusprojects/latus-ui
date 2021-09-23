@@ -11,6 +11,7 @@ trait HasCompilableItems
     protected array $beforeItems = [];
     protected array $afterItems = [];
     protected bool $ignoresAuthorization = false;
+    protected array $itemReferences = [];
 
     protected Collection $compiledItems;
 
@@ -97,6 +98,7 @@ trait HasCompilableItems
 
         if ($this->ignoresAuthorization || $item->authorized()) {
             $tempCollection->put($item->getName(), $item);
+            $this->itemReferences[] = $item->getName();
         }
 
         if (isset($this->afterItems[$item->getName()])) {
@@ -108,6 +110,11 @@ trait HasCompilableItems
         }
 
         return $tempCollection;
+    }
+
+    public function getItemReferences(): array
+    {
+        return $this->itemReferences;
     }
 
     abstract protected function getCompilableItemCollection(): Collection;
