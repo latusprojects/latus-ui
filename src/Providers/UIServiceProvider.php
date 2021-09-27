@@ -12,7 +12,6 @@ use Latus\UI\Repositories\Contracts\PageSettingRepository as PageSettingReposito
 use Latus\UI\Repositories\Eloquent\ComponentRepository;
 use Latus\UI\Repositories\Eloquent\PageSettingRepository;
 use Latus\UI\Services\ComponentService;
-use Latus\UI\Widgets\AdminNav;
 
 class UIServiceProvider extends ServiceProvider
 {
@@ -41,10 +40,6 @@ class UIServiceProvider extends ServiceProvider
         $this->app->singleton('modules', function () {
             return new Collection();
         });
-
-        $this->provideWidgets([
-            'admin-nav' => AdminNav::class
-        ]);
     }
 
     /**
