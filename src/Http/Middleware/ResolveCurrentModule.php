@@ -5,21 +5,15 @@ namespace Latus\UI\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Latus\UI\Components\Contracts\ModuleComponent;
-use Latus\UI\Services\ComponentService;
 
 class ResolveCurrentModule
 {
-    public function __construct(
-        protected ComponentService $componentService
-    )
-    {
-    }
-
     /**
      * Handle an incoming request.
      *
      * @param Request $request
      * @param Closure $next
+     * @param string $currentModuleContract
      * @return mixed
      */
     public function handle(Request $request, Closure $next, string $currentModuleContract): mixed

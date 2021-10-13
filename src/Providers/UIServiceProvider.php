@@ -2,10 +2,12 @@
 
 namespace Latus\UI\Providers;
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Latus\Laravel\Http\Middleware\BuildPackageDependencies;
 use Latus\Settings\Services\SettingService;
+use Latus\UI\Http\Middleware\ResolveCurrentModule;
 use Latus\UI\Providers\Traits\ProvidesWidgets;
 use Latus\UI\Repositories\Contracts\ComponentRepository as ComponentRepositoryContract;
 use Latus\UI\Repositories\Contracts\PageSettingRepository as PageSettingRepositoryContract;
@@ -67,5 +69,7 @@ class UIServiceProvider extends ServiceProvider
                 $componentService->createModuleBinding($moduleContract, $moduleClass);
             }
         });
+
+        $this->app->make('router')->aliasMiddleware('resolve-module', ResolveCurrentModule::class);
     }
 }
