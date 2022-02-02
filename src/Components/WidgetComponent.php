@@ -3,6 +3,7 @@
 
 namespace Latus\UI\Components;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Latus\UI\Components\Contracts\WidgetComponent as WidgetComponentContract;
@@ -41,34 +42,10 @@ abstract class WidgetComponent extends Component implements WidgetComponentContr
 
     public function compose()
     {
-        $route = self::WIDGET_ROUTE_PREFIX . '/' . $this->getFullName();
+    }
 
-        $class = static::class;
-
-        app()->bind($class, $this);
-
-        Route::middleware($this->middleware)->get($route, function (Request $request) use ($class) {
-            /**
-             * @var WidgetComponentContract $widget
-             */
-            $widget = app()->make($class);
-
-            $resolved_data = $widget->resolvesData();
-
-            if (!$resolved_data) {
-                return response('No Content', 204, ['Content-Type', 'application/json']);
-            }
-
-            if (!$this->authorizeRequest($request)) {
-                return response('Forbidden', 403, ['Content-Type', 'application/json']);
-            }
-
-            return response([
-                'status' => 200,
-                'name' => $widget->getName(),
-                'domain' => $widget->getDomain(),
-                'data' => $resolved_data
-            ]);
-        });
+    public function endpoint(Request $request, string $endpoint): JsonResponse|null
+    {
+        return null;
     }
 }
