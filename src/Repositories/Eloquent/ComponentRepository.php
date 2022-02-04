@@ -49,11 +49,9 @@ class ComponentRepository implements ComponentRepositoryContract
 
     public function provideWidget(string $widgetClass, string $widgetName)
     {
-        BuildPackageDependencies::addDependencyClosure(function () use ($widgetClass, $widgetName) {
-            if (!app()->bound($widgetName)) {
-                app()->bind($widgetName, $widgetClass);
-            }
-        });
+        if (!app()->bound($widgetName)) {
+            app()->bind($widgetName, $widgetClass);
+        }
     }
 
     public function createModuleBinding(string $moduleContract, string $moduleClass): ModuleComponent|null

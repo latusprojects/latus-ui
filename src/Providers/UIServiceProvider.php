@@ -70,6 +70,8 @@ class UIServiceProvider extends ServiceProvider
             }
         });
 
+        $this->loadRoutesFrom(__DIR__ . '/../../routes/all.php');
+
         $this->app->make('router')->aliasMiddleware('resolve-module', ResolveCurrentModule::class);
     }
 }
